@@ -1,5 +1,0 @@
-{
-  "eliza-token": "<your-eliza-token>",
-  "openrouter-api-key": "<your-openrouter-api-key>",
-  "mongodb-uri": "mongodb://localhost:27017"
-}

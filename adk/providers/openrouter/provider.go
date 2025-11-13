@@ -1,4 +1,4 @@
-package eliza
+package openrouter
 
 import (
 	"adk/providers"
@@ -9,24 +9,24 @@ import (
 	"net/http"
 )
 
-// Provider - implementation of Eliza provider
+// Provider - implementation of DeepSeek provider via OpenRouter
 type Provider struct {
 	Token string
 }
 
-// NewProvider creates a new Eliza provider with token
+// NewProvider creates a new DeepSeek provider with token
 func NewProvider(token string) *Provider {
 	return &Provider{
 		Token: token,
 	}
 }
 
-type elizaRequest struct {
-	Messages []providers.Message `json:"messages"`
+type openRouterRequest struct {
 	Model    string              `json:"model"`
+	Messages []providers.Message `json:"messages"`
 }
 
-type elizaResponse struct {
+type openRouterResponse struct {
 	Choices []struct {
 		Message struct {
 			Content string `json:"content"`
@@ -35,9 +35,9 @@ type elizaResponse struct {
 }
 
 func (p *Provider) ChatCompletion(messages []providers.Message) (*providers.ChatResponse, error) {
-	reqBody := elizaRequest{
+	reqBody := openRouterRequest{
+		Model:    "deepseek/deepseek-chat-v3-0324",
 		Messages: messages,
-		Model:    "internal-deepseek",
 	}
 
 	jsonData, err := json.Marshal(reqBody)
@@ -45,8 +45,7 @@ func (p *Provider) ChatCompletion(messages []providers.Message) (*providers.Chat
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	// HTTP request will be successful with Yandex VPN only
-	req, err := http.NewRequest("POST", "https://api.eliza.yandex.net/raw/auto/chat/completions", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", "https://openrouter.ai/api/v1/chat/completions", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
@@ -66,19 +65,19 @@ func (p *Provider) ChatCompletion(messages []providers.Message) (*providers.Chat
 		return nil, fmt.Errorf("API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
-	var elizaResp elizaResponse
-	if err := json.NewDecoder(resp.Body).Decode(&elizaResp); err != nil {
+	var openRouterResp openRouterResponse
+	if err := json.NewDecoder(resp.Body).Decode(&openRouterResp); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
-	if len(elizaResp.Choices) == 0 {
+	if len(openRouterResp.Choices) == 0 {
 		return nil, fmt.Errorf("no choices in response")
 	}
-	elizaTextResponse := elizaResp.Choices[0].Message.Content
-	
-	fmt.Println("Response from Eliza: ", elizaTextResponse)
+	deepSeekTextResponse := openRouterResp.Choices[0].Message.Content
+
+	fmt.Println("Response from DeepSeek: ", deepSeekTextResponse)
 
 	return &providers.ChatResponse{
-		Content: elizaTextResponse,
+		Content: deepSeekTextResponse,
 	}, nil
 }

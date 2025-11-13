@@ -7,8 +7,8 @@ type Provider interface {
 
 // Message - message for provider
 type Message struct {
-	Role    string
-	Content string
+	Role    string `json:"role"`
+	Content string `json:"content"`
 }
 
 // ChatResponse - response from provider
