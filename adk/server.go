@@ -6,15 +6,17 @@ import (
 	"log"
 	"net"
 
-	"adk/a2a/server"
+	a2aServerProto "adk/a2a/server"
+	"adk/execution"
 	"adk/providers"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type SendMessageHandler func(ctx context.Context, req *server.SendMessageRequest, provider providers.Provider) (*server.SendMessageResponse, error)
-type GetTaskHandler func(ctx context.Context, req *server.GetTaskRequest) (*server.Task, error)
+type SendMessageHandler func(context context.Context, req *a2aServerProto.SendMessageRequest, server *Server) (*a2aServerProto.SendMessageResponse, error)
+type GetTaskHandler func(context context.Context, req *a2aServerProto.GetTaskRequest) (*a2aServerProto.Task, error)
 
 type ServerConfig struct {
 	Port               string
@@ -27,7 +29,7 @@ type ServerConfig struct {
 type Server struct {
 	config     ServerConfig
 	grpcServer *grpc.Server
-	a2aServer  server.A2AServiceServer
+	a2aServer  a2aServerProto.A2AServiceServer
 	provider   providers.Provider
 }
 
@@ -43,18 +45,21 @@ func NewServer(config ServerConfig) (*Server, error) {
 		return nil, fmt.Errorf("GetTaskHandler is required")
 	}
 
-	a2aServer := &serverWrapper{
-		UnimplementedA2AServiceServer: server.UnimplementedA2AServiceServer{},
-		sendMessageHandler:            config.SendMessageHandler,
-		getTaskHandler:                config.GetTaskHandler,
-		provider:                      config.Provider,
+	server := &Server{
+		config:   config,
+		provider: config.Provider,
 	}
 
-	return &Server{
-		config:    config,
-		a2aServer: a2aServer,
-		provider:  config.Provider,
-	}, nil
+	a2aServer := &serverWrapper{
+		UnimplementedA2AServiceServer: a2aServerProto.UnimplementedA2AServiceServer{},
+		sendMessageHandler:            config.SendMessageHandler,
+		getTaskHandler:                config.GetTaskHandler,
+		server:                        server,
+	}
+
+	server.a2aServer = a2aServer
+
+	return server, nil
 }
 
 func (s *Server) Start() error {
@@ -64,7 +69,7 @@ func (s *Server) Start() error {
 	}
 
 	s.grpcServer = grpc.NewServer()
-	server.RegisterA2AServiceServer(s.grpcServer, s.a2aServer)
+	a2aServerProto.RegisterA2AServiceServer(s.grpcServer, s.a2aServer)
 
 	reflection.Register(s.grpcServer)
 
@@ -81,4 +86,22 @@ func (s *Server) Stop() {
 	if s.grpcServer != nil {
 		s.grpcServer.GracefulStop()
 	}
+}
+
+type UserMessageInfo struct {
+	MessageId string
+	ContextId string
+	TaskId    string
+	Role      string
+	Content   string
+	Metadata  *structpb.Struct
+}
+
+// Creates a new detached task for ADK execution
+func (s *Server) CreateNewDetachedTask(context context.Context, message *a2aServerProto.Message) (*a2aServerProto.Task, error) {
+	response, err := execution.CreateNewDetachedTask(context, message, s.provider)
+	if err != nil {
+		return nil, err
+	}
+	return response.Task, nil
 }

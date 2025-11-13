@@ -1,22 +1,21 @@
 package adk
 
 import (
-	"adk/a2a/server"
-	"adk/providers"
+	a2aServerProto "adk/a2a/server"
 	"context"
 )
 
 type serverWrapper struct {
-	server.UnimplementedA2AServiceServer
+	a2aServerProto.UnimplementedA2AServiceServer
 	sendMessageHandler SendMessageHandler
 	getTaskHandler     GetTaskHandler
-	provider           providers.Provider
+	server             *Server
 }
 
-func (w *serverWrapper) SendMessage(ctx context.Context, req *server.SendMessageRequest) (*server.SendMessageResponse, error) {
-	return w.sendMessageHandler(ctx, req, w.provider)
+func (w *serverWrapper) SendMessage(context context.Context, req *a2aServerProto.SendMessageRequest) (*a2aServerProto.SendMessageResponse, error) {
+	return w.sendMessageHandler(context, req, w.server)
 }
 
-func (w *serverWrapper) GetTask(ctx context.Context, req *server.GetTaskRequest) (*server.Task, error) {
-	return w.getTaskHandler(ctx, req)
+func (w *serverWrapper) GetTask(context context.Context, req *a2aServerProto.GetTaskRequest) (*a2aServerProto.Task, error) {
+	return w.getTaskHandler(context, req)
 }

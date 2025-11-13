@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func GetTask(ctx context.Context, req *server.GetTaskRequest) (*server.Task, error) {
+func GetTask(context context.Context, req *server.GetTaskRequest) (*server.Task, error) {
 	log.Printf("Custom GetTask handler: %+v", req)
 
 	task := &server.Task{

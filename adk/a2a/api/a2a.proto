@@ -5,7 +5,6 @@ package a2a;
 option go_package = "adk/a2a/server;server";
 
 import "google/protobuf/struct.proto";
-import "google/protobuf/timestamp.proto";
 
 service A2AService {
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
@@ -28,10 +27,9 @@ enum Role {
 }
 
 message Artifact {
-  string id = 1;
-  string type = 2;
-  string content = 3;
-  google.protobuf.Struct metadata = 4;
+  string type = 1;
+  string content = 2;
+  google.protobuf.Struct metadata = 3;
 }
 
 message Task {
@@ -44,12 +42,10 @@ message Task {
 }
 
 message Message {
-  string message_id = 1;
-  string context_id = 2;
-  string task_id = 3;
-  Role role = 4;
-  string content = 5;
-  google.protobuf.Struct metadata = 6;
+  string context_id = 1;
+  Role role = 2;
+  string content = 3;
+  google.protobuf.Struct metadata = 4;
 }
 
 
