@@ -35,6 +35,8 @@ type openRouterResponse struct {
 }
 
 func (p *Provider) ChatCompletion(messages []providers.Message) (*providers.ChatResponse, error) {
+	fmt.Println("OpenRouter messages request: ", messages)
+
 	reqBody := openRouterRequest{
 		Model:    "deepseek/deepseek-chat-v3-0324",
 		Messages: messages,

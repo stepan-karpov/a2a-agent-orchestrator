@@ -105,8 +105,8 @@ type UserMessageInfo struct {
 }
 
 // Creates a new detached task for ADK execution
-func (s *Server) CreateNewDetachedTask(context context.Context, message *a2aServerProto.Message) (*a2aServerProto.Task, error) {
-	response, err := execution.CreateNewDetachedTask(context, message, s.provider, s.database, s.collection)
+func (s *Server) CreateNewDetachedTask(context context.Context, message *a2aServerProto.Message, executionSettings *execution.ExecutionSettings) (*a2aServerProto.Task, error) {
+	response, err := execution.CreateNewDetachedTask(context, message, executionSettings, s.provider, s.database, s.collection)
 	if err != nil {
 		return nil, err
 	}
