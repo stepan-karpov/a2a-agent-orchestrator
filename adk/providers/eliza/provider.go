@@ -2,10 +2,9 @@ package eliza
 
 import "adk/providers"
 
-// Provider - реализация провайдера Eliza
+// Provider - implementation of Eliza provider
 type Provider struct{}
 
-// ChatCompletion реализует метод интерфейса providers.Provider
 func (p *Provider) ChatCompletion(messages []providers.Message) (*providers.ChatResponse, error) {
 	return &providers.ChatResponse{
 		Content: "HelloWorld from Eliza",
