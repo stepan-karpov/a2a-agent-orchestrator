@@ -37,8 +37,7 @@ message Task {
   string context_id = 2;
   TaskState status = 3;
   repeated Artifact artifacts = 4;
-  repeated Message history = 5;
-  google.protobuf.Struct metadata = 6;
+  google.protobuf.Struct metadata = 5;
 }
 
 message Message {

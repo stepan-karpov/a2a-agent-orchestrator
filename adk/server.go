@@ -9,6 +9,7 @@ import (
 	a2aServerProto "adk/a2a/server"
 	"adk/execution"
 	"adk/providers"
+	"adk/storages/mongo"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -16,13 +17,15 @@ import (
 )
 
 type SendMessageHandler func(context context.Context, req *a2aServerProto.SendMessageRequest, server *Server) (*a2aServerProto.SendMessageResponse, error)
-type GetTaskHandler func(context context.Context, req *a2aServerProto.GetTaskRequest) (*a2aServerProto.Task, error)
+type GetTaskHandler func(context context.Context, req *a2aServerProto.GetTaskRequest, server *Server) (*a2aServerProto.Task, error)
 
 type ServerConfig struct {
 	Port               string
 	Provider           providers.Provider
 	SendMessageHandler SendMessageHandler
 	GetTaskHandler     GetTaskHandler
+	Database           string
+	Collection         string
 }
 
 // Server - adk wrapper for gRPC server
@@ -31,6 +34,8 @@ type Server struct {
 	grpcServer *grpc.Server
 	a2aServer  a2aServerProto.A2AServiceServer
 	provider   providers.Provider
+	database   string
+	collection string
 }
 
 // NewServer creates a new server instance with configuration
@@ -46,8 +51,10 @@ func NewServer(config ServerConfig) (*Server, error) {
 	}
 
 	server := &Server{
-		config:   config,
-		provider: config.Provider,
+		config:     config,
+		provider:   config.Provider,
+		database:   config.Database,
+		collection: config.Collection,
 	}
 
 	a2aServer := &serverWrapper{
@@ -99,9 +106,17 @@ type UserMessageInfo struct {
 
 // Creates a new detached task for ADK execution
 func (s *Server) CreateNewDetachedTask(context context.Context, message *a2aServerProto.Message) (*a2aServerProto.Task, error) {
-	response, err := execution.CreateNewDetachedTask(context, message, s.provider)
+	response, err := execution.CreateNewDetachedTask(context, message, s.provider, s.database, s.collection)
 	if err != nil {
 		return nil, err
 	}
 	return response.Task, nil
+}
+
+func (s *Server) GetTask(context context.Context, req *a2aServerProto.GetTaskRequest) (*a2aServerProto.Task, error) {
+	task, err := mongo.GetTask(context, req.Name, s.database, s.collection)
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
 }

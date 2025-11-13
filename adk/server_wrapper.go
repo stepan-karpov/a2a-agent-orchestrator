@@ -17,5 +17,5 @@ func (w *serverWrapper) SendMessage(context context.Context, req *a2aServerProto
 }
 
 func (w *serverWrapper) GetTask(context context.Context, req *a2aServerProto.GetTaskRequest) (*a2aServerProto.Task, error) {
-	return w.getTaskHandler(context, req)
+	return w.getTaskHandler(context, req, w.server)
 }

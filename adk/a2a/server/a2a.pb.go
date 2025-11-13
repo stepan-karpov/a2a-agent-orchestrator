@@ -192,8 +192,7 @@ type Task struct {
 	ContextId     string                 `protobuf:"bytes,2,opt,name=context_id,json=contextId,proto3" json:"context_id,omitempty"`
 	Status        TaskState              `protobuf:"varint,3,opt,name=status,proto3,enum=a2a.TaskState" json:"status,omitempty"`
 	Artifacts     []*Artifact            `protobuf:"bytes,4,rep,name=artifacts,proto3" json:"artifacts,omitempty"`
-	History       []*Message             `protobuf:"bytes,5,rep,name=history,proto3" json:"history,omitempty"`
-	Metadata      *structpb.Struct       `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata      *structpb.Struct       `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -252,13 +251,6 @@ func (x *Task) GetStatus() TaskState {
 func (x *Task) GetArtifacts() []*Artifact {
 	if x != nil {
 		return x.Artifacts
-	}
-	return nil
-}
-
-func (x *Task) GetHistory() []*Message {
-	if x != nil {
-		return x.History
 	}
 	return nil
 }
@@ -486,15 +478,14 @@ const file_a2a_api_a2a_proto_rawDesc = "" +
 	"\bArtifact\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x123\n" +
-	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\xe7\x01\n" +
+	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\xbf\x01\n" +
 	"\x04Task\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
 	"context_id\x18\x02 \x01(\tR\tcontextId\x12&\n" +
 	"\x06status\x18\x03 \x01(\x0e2\x0e.a2a.TaskStateR\x06status\x12+\n" +
-	"\tartifacts\x18\x04 \x03(\v2\r.a2a.ArtifactR\tartifacts\x12&\n" +
-	"\ahistory\x18\x05 \x03(\v2\f.a2a.MessageR\ahistory\x123\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\x96\x01\n" +
+	"\tartifacts\x18\x04 \x03(\v2\r.a2a.ArtifactR\tartifacts\x123\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\x96\x01\n" +
 	"\aMessage\x12\x1d\n" +
 	"\n" +
 	"context_id\x18\x01 \x01(\tR\tcontextId\x12\x1d\n" +
@@ -552,22 +543,21 @@ var file_a2a_api_a2a_proto_depIdxs = []int32{
 	8,  // 0: a2a.Artifact.metadata:type_name -> google.protobuf.Struct
 	0,  // 1: a2a.Task.status:type_name -> a2a.TaskState
 	2,  // 2: a2a.Task.artifacts:type_name -> a2a.Artifact
-	4,  // 3: a2a.Task.history:type_name -> a2a.Message
-	8,  // 4: a2a.Task.metadata:type_name -> google.protobuf.Struct
-	1,  // 5: a2a.Message.role:type_name -> a2a.Role
-	8,  // 6: a2a.Message.metadata:type_name -> google.protobuf.Struct
-	4,  // 7: a2a.SendMessageRequest.request:type_name -> a2a.Message
-	8,  // 8: a2a.SendMessageRequest.metadata:type_name -> google.protobuf.Struct
-	3,  // 9: a2a.SendMessageResponse.task:type_name -> a2a.Task
-	5,  // 10: a2a.A2AService.SendMessage:input_type -> a2a.SendMessageRequest
-	7,  // 11: a2a.A2AService.GetTask:input_type -> a2a.GetTaskRequest
-	6,  // 12: a2a.A2AService.SendMessage:output_type -> a2a.SendMessageResponse
-	3,  // 13: a2a.A2AService.GetTask:output_type -> a2a.Task
-	12, // [12:14] is the sub-list for method output_type
-	10, // [10:12] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	8,  // 3: a2a.Task.metadata:type_name -> google.protobuf.Struct
+	1,  // 4: a2a.Message.role:type_name -> a2a.Role
+	8,  // 5: a2a.Message.metadata:type_name -> google.protobuf.Struct
+	4,  // 6: a2a.SendMessageRequest.request:type_name -> a2a.Message
+	8,  // 7: a2a.SendMessageRequest.metadata:type_name -> google.protobuf.Struct
+	3,  // 8: a2a.SendMessageResponse.task:type_name -> a2a.Task
+	5,  // 9: a2a.A2AService.SendMessage:input_type -> a2a.SendMessageRequest
+	7,  // 10: a2a.A2AService.GetTask:input_type -> a2a.GetTaskRequest
+	6,  // 11: a2a.A2AService.SendMessage:output_type -> a2a.SendMessageResponse
+	3,  // 12: a2a.A2AService.GetTask:output_type -> a2a.Task
+	11, // [11:13] is the sub-list for method output_type
+	9,  // [9:11] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_a2a_api_a2a_proto_init() }

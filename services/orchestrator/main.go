@@ -18,6 +18,8 @@ func main() {
 		Provider:           provider,
 		SendMessageHandler: methods.SendMessage,
 		GetTaskHandler:     methods.GetTask,
+		Database:           "a2a",
+		Collection:         "orchestrator",
 	})
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)

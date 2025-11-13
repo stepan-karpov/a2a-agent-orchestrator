@@ -14,6 +14,8 @@ func IterateOverAnswers(context context.Context, provider providers.Provider, ta
 		},
 	)
 	response, err := provider.ChatCompletion(history)
+	
+	// TODO: add tools iteration here
 
 	if err != nil {
 		return nil, err
@@ -22,11 +24,6 @@ func IterateOverAnswers(context context.Context, provider providers.Provider, ta
 	task.Artifacts = append(task.Artifacts, &server.Artifact{
 		Type:    "text",
 		Content: response.Content,
-	})
-	task.History = append(task.History, &server.Message{
-		ContextId: task.ContextId,
-		Role:      server.Role_ROLE_ASSISTANT,
-		Content:   response.Content,
 	})
 	task.Status = server.TaskState_TASK_STATE_COMPLETED
 

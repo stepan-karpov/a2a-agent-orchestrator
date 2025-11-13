@@ -1,19 +1,15 @@
 package methods
 
 import (
+	"adk"
 	"adk/a2a/server"
 	"context"
-	"log"
 )
 
-func GetTask(context context.Context, req *server.GetTaskRequest) (*server.Task, error) {
-	log.Printf("Custom GetTask handler: %+v", req)
-
-	task := &server.Task{
-		Id:        req.Name,
-		ContextId: "context-custom",
-		Status:    server.TaskState_TASK_STATE_WORKING,
+func GetTask(context context.Context, req *server.GetTaskRequest, server *adk.Server) (*server.Task, error) {
+	task, err := server.GetTask(context, req)
+	if err != nil {
+		return nil, err
 	}
-
 	return task, nil
 }
