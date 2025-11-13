@@ -44,7 +44,7 @@ func CreateNewDetachedTask(context ctx.Context, message *server.Message, provide
 			return
 		}
 		// 4. Iterating over answers, getting some agents responses
-		task, err := IterateOverAnswers(detachedCtx, provider, task, history)
+		task, err := IterateOverAnswers(detachedCtx, provider, task, message, history)
 		if err != nil {
 			FailAndSaveTask(detachedCtx, task)
 			return

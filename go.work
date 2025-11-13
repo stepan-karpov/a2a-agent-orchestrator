@@ -4,4 +4,5 @@ use (
 	./adk
 	./services/orchestrator
 	./services/simple-agent
+	./telegram-client
 )

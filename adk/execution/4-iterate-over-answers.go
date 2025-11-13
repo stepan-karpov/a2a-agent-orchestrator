@@ -6,15 +6,15 @@ import (
 	"context"
 )
 
-func IterateOverAnswers(context context.Context, provider providers.Provider, task *server.Task, history []providers.Message) (*server.Task, error) {
+func IterateOverAnswers(context context.Context, provider providers.Provider, task *server.Task, message *server.Message, history []providers.Message) (*server.Task, error) {
 	history = append(history,
 		providers.Message{
-			Role:    "system",
-			Content: "You are a helpful assistant.",
+			Role:    "user",
+			Content: message.Content,
 		},
 	)
 	response, err := provider.ChatCompletion(history)
-	
+
 	// TODO: add tools iteration here
 
 	if err != nil {

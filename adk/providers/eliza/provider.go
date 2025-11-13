@@ -35,6 +35,8 @@ type elizaResponse struct {
 }
 
 func (p *Provider) ChatCompletion(messages []providers.Message) (*providers.ChatResponse, error) {
+	fmt.Println("Eliza messages request: ", messages)
+
 	reqBody := elizaRequest{
 		Messages: messages,
 		Model:    "internal-deepseek",
