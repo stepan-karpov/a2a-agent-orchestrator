@@ -1,15 +1,15 @@
 # A2A API
 
-gRPC API для agent-to-agent коммуникации.
+gRPC API for agent-to-agent communication.
 
-## Структура
+## Structure
 
-- `adk/a2a/api/` - proto файлы с описанием API
-- `adk/a2a/server/` - сгенерированные .pb.go файлы
+- `adk/a2a/api/` - proto files with API definitions
+- `adk/a2a/server/` - generated .pb.go files
 
-## Генерация кода
+## Code Generation
 
-После изменения `a2a.proto` выполните:
+After modifying `a2a.proto`, run:
 
 ```bash
 cd adk
@@ -20,6 +20,6 @@ protoc --go_out=. --go_opt=paths=source_relative \
        --go-grpc_opt=Ma2a/api/a2a.proto=adk/a2a/server \
        a2a/api/a2a.proto
 
-# Переместить сгенерированные файлы в server
+# Move generated files to server
 mv a2a/api/*.pb.go a2a/server/
 ```

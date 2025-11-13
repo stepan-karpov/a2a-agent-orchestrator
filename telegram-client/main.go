@@ -25,7 +25,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// Connect to gRPC service for each request
 	conn, err := grpc.NewClient(getGRPCHost(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Ошибка при подключении к сервису-оркестратору")
+		msg := tgbotapi.NewMessage(message.Chat.ID, "Error connecting to orchestrator service")
 		bot.Send(msg)
 		return
 	}
@@ -43,7 +43,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		},
 	}
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Обрабатываю ваше сообщение...")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Processing your message...")
 	bot.Send(msg)
 
 	resp, err := grpcClient.SendMessage(ctx, req)
@@ -63,7 +63,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		getReq := &a2aProto.GetTaskRequest{Name: taskId}
 		task, err = grpcClient.GetTask(ctx, getReq)
 		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Ошибка при получении статуса задачи: "+err.Error())
+			msg := tgbotapi.NewMessage(message.Chat.ID, "Error getting task status: "+err.Error())
 			bot.Send(msg)
 		}
 		if task.Status == a2aProto.TaskState_TASK_STATE_COMPLETED || task.Status == a2aProto.TaskState_TASK_STATE_FAILED {
@@ -74,7 +74,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// Send response
 	responseText := "Processing..."
 	if task == nil {
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Ошибка - задача потерялась в оркестраторе :(")
+		msg := tgbotapi.NewMessage(message.Chat.ID, "Error - task was lost in orchestrator :(")
 		bot.Send(msg)
 		return
 	}
@@ -82,7 +82,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	if task.Status == a2aProto.TaskState_TASK_STATE_COMPLETED && len(task.Artifacts) > 0 {
 		responseText = task.Artifacts[0].Content
 	} else if task.Status == a2aProto.TaskState_TASK_STATE_FAILED {
-		responseText = "Задача упала :("
+		responseText = "Task failed :("
 	}
 	msg = tgbotapi.NewMessage(message.Chat.ID, responseText)
 	bot.Send(msg)
