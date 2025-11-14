@@ -7,8 +7,9 @@ services:
       dockerfile: telegram-client/Dockerfile
     container_name: telegram-client
     restart: unless-stopped
+    network_mode: host
     environment:
-      - GRPC_HOST=192.168.1.12:50051
+      - GRPC_HOST=127.0.0.1:50051
     volumes:
       - ../vault.json:/app/vault.json:ro
 

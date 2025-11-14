@@ -3,6 +3,5 @@ go 1.25.3
 use (
 	./adk
 	./services/orchestrator
-	./services/simple-agent
 	./telegram-client
 )

@@ -8,7 +8,8 @@ COPY . .
 # Navigate to agent directory
 WORKDIR /app/services/agents/crypto-agent
 
-# Build
+# Build (disable workspace to avoid go.work conflicts)
+ENV GOWORK=off
 RUN go build -o crypto-agent .
 
 FROM alpine:latest

@@ -8,7 +8,8 @@ COPY . .
 # Navigate to agent directory
 WORKDIR /app/services/agents/authors-info-agent
 
-# Build
+# Build (disable workspace to avoid go.work conflicts)
+ENV GOWORK=off
 RUN go build -o authors-info-agent .
 
 FROM alpine:latest

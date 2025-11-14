@@ -41,10 +41,11 @@ message Task {
 }
 
 message Message {
-  string context_id = 1;
-  Role role = 2;
-  string content = 3;
-  google.protobuf.Struct metadata = 4;
+  string task_id = 1;
+  string context_id = 2;
+  Role role = 3;
+  string content = 4;
+  google.protobuf.Struct metadata = 5;
 }
 
 

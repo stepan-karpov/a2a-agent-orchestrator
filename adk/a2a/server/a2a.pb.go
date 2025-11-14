@@ -264,10 +264,11 @@ func (x *Task) GetMetadata() *structpb.Struct {
 
 type Message struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ContextId     string                 `protobuf:"bytes,1,opt,name=context_id,json=contextId,proto3" json:"context_id,omitempty"`
-	Role          Role                   `protobuf:"varint,2,opt,name=role,proto3,enum=a2a.Role" json:"role,omitempty"`
-	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
-	Metadata      *structpb.Struct       `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	TaskId        string                 `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	ContextId     string                 `protobuf:"bytes,2,opt,name=context_id,json=contextId,proto3" json:"context_id,omitempty"`
+	Role          Role                   `protobuf:"varint,3,opt,name=role,proto3,enum=a2a.Role" json:"role,omitempty"`
+	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
+	Metadata      *structpb.Struct       `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -300,6 +301,13 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
 	return file_a2a_api_a2a_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Message) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
 }
 
 func (x *Message) GetContextId() string {
@@ -485,13 +493,14 @@ const file_a2a_api_a2a_proto_rawDesc = "" +
 	"context_id\x18\x02 \x01(\tR\tcontextId\x12&\n" +
 	"\x06status\x18\x03 \x01(\x0e2\x0e.a2a.TaskStateR\x06status\x12+\n" +
 	"\tartifacts\x18\x04 \x03(\v2\r.a2a.ArtifactR\tartifacts\x123\n" +
-	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\x96\x01\n" +
-	"\aMessage\x12\x1d\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\xaf\x01\n" +
+	"\aMessage\x12\x17\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x1d\n" +
 	"\n" +
-	"context_id\x18\x01 \x01(\tR\tcontextId\x12\x1d\n" +
-	"\x04role\x18\x02 \x01(\x0e2\t.a2a.RoleR\x04role\x12\x18\n" +
-	"\acontent\x18\x03 \x01(\tR\acontent\x123\n" +
-	"\bmetadata\x18\x04 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"q\n" +
+	"context_id\x18\x02 \x01(\tR\tcontextId\x12\x1d\n" +
+	"\x04role\x18\x03 \x01(\x0e2\t.a2a.RoleR\x04role\x12\x18\n" +
+	"\acontent\x18\x04 \x01(\tR\acontent\x123\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"q\n" +
 	"\x12SendMessageRequest\x12&\n" +
 	"\arequest\x18\x01 \x01(\v2\f.a2a.MessageR\arequest\x123\n" +
 	"\bmetadata\x18\x02 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"4\n" +

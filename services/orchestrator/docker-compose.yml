@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  orchestrator:
+    build:
+      context: ../..
+      dockerfile: services/orchestrator/Dockerfile
+    container_name: orchestrator
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ../../vault.json:/app/vault.json:ro
+      - ./orchestrator_setting.json:/app/orchestrator_setting.json:ro
+

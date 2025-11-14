@@ -2,6 +2,7 @@ package execution
 
 import (
 	"adk/a2a/server"
+	"adk/agents"
 	"adk/providers"
 	ctx "context"
 	"fmt"
@@ -10,11 +11,17 @@ import (
 )
 
 type ExecutionSettings struct {
-	Prompt       string `json:"prompt"`
-	HistoryLimit int    `json:"history_limit"`
+	Prompt       string         `json:"prompt"`
+	HistoryLimit int            `json:"history_limit"`
+	Agents       []agents.Agent `json:"agents"`
 }
 
 func FailAndSaveTask(context ctx.Context, task *server.Task) error {
+	if task == nil {
+		fmt.Printf("Task failed: task is nil\n")
+		return nil
+	}
+
 	fmt.Printf("Task failed: %v\n", task.Id)
 
 	task.Status = server.TaskState_TASK_STATE_FAILED
@@ -33,6 +40,7 @@ func CreateNewDetachedTask(context ctx.Context, message *server.Message, serverS
 	// 2. Saving initial state of the task to storage
 	err := SaveInitialState(context, task, database, collection)
 	if err != nil {
+		fmt.Printf("Error saving initial state of the task: %v", err)
 		FailAndSaveTask(context, task)
 		return nil, err
 	}
@@ -69,6 +77,7 @@ func CreateNewDetachedTask(context ctx.Context, message *server.Message, serverS
 		// 4. Iterating over answers, getting some agents responses
 		task, err := IterateOverAnswers(detachedCtx, provider, task, message, history)
 		if err != nil {
+			fmt.Printf("Error iterating over answers: %v", err)
 			FailAndSaveTask(detachedCtx, task)
 			return
 		}

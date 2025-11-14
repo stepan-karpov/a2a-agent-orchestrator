@@ -8,7 +8,8 @@ COPY . .
 # Navigate to agent directory
 WORKDIR /app/services/agents/weather-agent
 
-# Build
+# Build (disable workspace to avoid go.work conflicts)
+ENV GOWORK=off
 RUN go build -o weather-agent .
 
 FROM alpine:latest

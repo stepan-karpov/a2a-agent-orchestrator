@@ -2,12 +2,14 @@ package main
 
 import (
 	"adk"
+	"adk/agents"
 	"log"
 	"orchestrator/methods"
+	"orchestrator/settings"
 )
 
 func main() {
-	provider, err := adk.NewProvider("eliza")
+	provider, err := adk.NewProvider("openrouter")
 	if err != nil {
 		log.Fatalf("Failed to create provider: %v", err)
 	}
@@ -25,11 +27,15 @@ func main() {
 		log.Fatalf("Failed to create server: %v", err)
 	}
 
-	server.RegisterNewAgent(adk.Agent{
-		Name:        "creators-agent",
-		Description: "Orchestrator agent",
-		Url:         "localhost:50051",
-	})
+	serverSettings := settings.GetServerSettings()
+
+	for _, agent := range serverSettings.Agents {
+		server.RegisterNewAgent(agents.Agent{
+			Name:        agent.Name,
+			Description: agent.Description,
+			Url:         agent.Url,
+		})
+	}
 
 	if err := server.Start(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)

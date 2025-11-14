@@ -1,4 +1,31 @@
 {
   "prompt": "You are a Telegram bot assistant. Answer as briefly and concisely as possible. Do not break Telegram markup",
-  "history_limit": 10
+  "history_limit": 10,
+  "agents": [
+    {
+      "name": "authors-info-agent",
+      "description": "Authors info agent. You can use this agent to get information about authors.",
+      "url": "localhost:50051"
+    },
+    {
+      "name": "football-agent",
+      "description": "Football agent. You can use this agent to get information about football.",
+      "url": "localhost:50051"
+    },
+    {
+      "name": "news-agent",
+      "description": "News agent. You can use this agent to get information about news.",
+      "url": "localhost:50051"
+    },
+    {
+      "name": "crypto-agent",
+      "description": "Crypto agent. You can use this agent to get information about crypto.",
+      "url": "localhost:50051"
+    },
+    {
+      "name": "weather-agent",
+      "description": "Weather agent. You can use this agent to get information about weather.",
+      "url": "localhost:50051"
+    }
+  ]
 }
