@@ -19,6 +19,13 @@ import (
 type SendMessageHandler func(context context.Context, req *a2aServerProto.SendMessageRequest, server *Server) (*a2aServerProto.SendMessageResponse, error)
 type GetTaskHandler func(context context.Context, req *a2aServerProto.GetTaskRequest, server *Server) (*a2aServerProto.Task, error)
 
+// Agent represents an agent that can be used as a tool in LLM requests
+type Agent struct {
+	Name        string
+	Description string
+	Url         string
+}
+
 type ServerConfig struct {
 	Port               string
 	Provider           providers.Provider
@@ -36,6 +43,7 @@ type Server struct {
 	provider   providers.Provider
 	database   string
 	collection string
+	agents     []Agent // Optional: registered agents for use as tools
 }
 
 // NewServer creates a new server instance with configuration
@@ -119,4 +127,12 @@ func (s *Server) GetTask(context context.Context, req *a2aServerProto.GetTaskReq
 		return nil, err
 	}
 	return task, nil
+}
+
+// RegisterNewAgent registers a new agent that can be used as a tool in LLM requests
+func (s *Server) RegisterNewAgent(agent Agent) {
+	if s.agents == nil {
+		s.agents = make([]Agent, 0)
+	}
+	s.agents = append(s.agents, agent)
 }

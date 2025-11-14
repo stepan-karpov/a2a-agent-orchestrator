@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  authors-info-agent:
+    build:
+      context: ../../..
+      dockerfile: services/agents/authors-info-agent/Dockerfile
+    container_name: authors-info-agent
+    restart: unless-stopped
+    ports:
+      - "50052:50052"
+    volumes:
+      - ../../../vault.json:/app/vault.json:ro
+      - ./agent_settings.json:/app/agent_settings.json:ro
+

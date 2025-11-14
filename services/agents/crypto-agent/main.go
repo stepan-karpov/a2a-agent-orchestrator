@@ -2,8 +2,8 @@ package main
 
 import (
 	"adk"
+	"crypto-agent/methods"
 	"log"
-	"orchestrator/methods"
 )
 
 func main() {
@@ -14,22 +14,16 @@ func main() {
 
 	// Main server instance
 	server, err := adk.NewServer(adk.ServerConfig{
-		Port:               ":50051",
+		Port:               ":50053",
 		Provider:           provider,
 		SendMessageHandler: methods.SendMessage,
 		GetTaskHandler:     methods.GetTask,
 		Database:           "a2a",
-		Collection:         "orchestrator",
+		Collection:         "crypto_agent",
 	})
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}
-
-	server.RegisterNewAgent(adk.Agent{
-		Name:        "creators-agent",
-		Description: "Orchestrator agent",
-		Url:         "localhost:50051",
-	})
 
 	if err := server.Start(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)

@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  football-agent:
+    build:
+      context: ../../..
+      dockerfile: services/agents/football-agent/Dockerfile
+    container_name: football-agent
+    restart: unless-stopped
+    ports:
+      - "50054:50054"
+    volumes:
+      - ../../../vault.json:/app/vault.json:ro
+      - ./agent_settings.json:/app/agent_settings.json:ro
+

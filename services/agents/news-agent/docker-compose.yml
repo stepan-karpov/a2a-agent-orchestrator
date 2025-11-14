@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  news-agent:
+    build:
+      context: ../../..
+      dockerfile: services/agents/news-agent/Dockerfile
+    container_name: news-agent
+    restart: unless-stopped
+    ports:
+      - "50055:50055"
+    volumes:
+      - ../../../vault.json:/app/vault.json:ro
+      - ./agent_settings.json:/app/agent_settings.json:ro
+

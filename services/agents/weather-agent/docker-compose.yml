@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  weather-agent:
+    build:
+      context: ../../..
+      dockerfile: services/agents/weather-agent/Dockerfile
+    container_name: weather-agent
+    restart: unless-stopped
+    ports:
+      - "50056:50056"
+    volumes:
+      - ../../../vault.json:/app/vault.json:ro
+      - ./agent_settings.json:/app/agent_settings.json:ro
+

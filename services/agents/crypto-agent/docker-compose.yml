@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  crypto-agent:
+    build:
+      context: ../../..
+      dockerfile: services/agents/crypto-agent/Dockerfile
+    container_name: crypto-agent
+    restart: unless-stopped
+    ports:
+      - "50053:50053"
+    volumes:
+      - ../../../vault.json:/app/vault.json:ro
+      - ./agent_settings.json:/app/agent_settings.json:ro
+
