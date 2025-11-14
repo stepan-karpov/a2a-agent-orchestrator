@@ -21,12 +21,20 @@ func getGRPCHost() string {
 	return "localhost:50051"
 }
 
+func SendMessage(bot *tgbotapi.BotAPI, chatID int64, text string) error {
+	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ParseMode = tgbotapi.ModeHTML
+	_, err := bot.Send(msg)
+	return err
+}
+
 func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// Connect to gRPC service for each request
+	// SendMessage(bot, message.Chat.ID, "<b>Привет!</b> Это тестовое сообщение с <b>жирным текстом</b>.")
+	// return
 	conn, err := grpc.NewClient(getGRPCHost(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Error connecting to orchestrator service")
-		bot.Send(msg)
+		SendMessage(bot, message.Chat.ID, "Error connecting to orchestrator service")
 		return
 	}
 	defer conn.Close()
@@ -43,13 +51,11 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		},
 	}
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Processing your message...")
-	bot.Send(msg)
+	SendMessage(bot, message.Chat.ID, "Processing your message...")
 
 	resp, err := grpcClient.SendMessage(ctx, req)
 	if err != nil {
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Error: "+err.Error())
-		bot.Send(msg)
+		SendMessage(bot, message.Chat.ID, "Error: "+err.Error())
 		return
 	}
 
@@ -63,8 +69,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		getReq := &a2aProto.GetTaskRequest{Name: taskId}
 		task, err = grpcClient.GetTask(ctx, getReq)
 		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Error getting task status: "+err.Error())
-			bot.Send(msg)
+			SendMessage(bot, message.Chat.ID, "Error getting task status: "+err.Error())
 		}
 		if task.Status == a2aProto.TaskState_TASK_STATE_COMPLETED || task.Status == a2aProto.TaskState_TASK_STATE_FAILED {
 			break
@@ -74,8 +79,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// Send response
 	responseText := "Processing..."
 	if task == nil {
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Error - task was lost in orchestrator :(")
-		bot.Send(msg)
+		SendMessage(bot, message.Chat.ID, "Error - task was lost in orchestrator :(")
 		return
 	}
 
@@ -84,8 +88,7 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	} else if task.Status == a2aProto.TaskState_TASK_STATE_FAILED {
 		responseText = "Task failed :("
 	}
-	msg = tgbotapi.NewMessage(message.Chat.ID, responseText)
-	bot.Send(msg)
+	SendMessage(bot, message.Chat.ID, responseText)
 }
 
 func Listen(bot *tgbotapi.BotAPI) {

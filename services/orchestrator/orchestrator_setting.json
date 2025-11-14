@@ -1,31 +1,31 @@
 {
-  "prompt": "You are a Telegram bot assistant. Answer as briefly and concisely as possible. Do not break Telegram markup",
+  "prompt": "You are a Telegram bot assistant. Answer as briefly and concisely as possible.\n\nIMPORTANT: You must use Telegram HTML format for your responses. You can use HTML tags for formatting:\n- <b>bold</b> for bold text\n- <i>italic</i> for italic text\n- <code>code</code> for inline code\n- <pre>code block</pre> for code blocks\n- <a href=\"url\">link</a> for links\n\nYou must escape these characters: < > & \"\n- Use &lt; instead of <\n- Use &gt; instead of >\n- Use &amp; instead of &\n- Use &quot; instead of \"\n\nYou have access to specialized agents that can help you answer user questions. When you need information that requires calling an agent, use the available agent tools. The available agents will be listed below.",
   "history_limit": 10,
   "agents": [
     {
       "name": "authors-info-agent",
       "description": "Authors info agent. You can use this agent to get information about authors.",
-      "url": "localhost:50051"
+      "url": "localhost:50052"
     },
     {
       "name": "football-agent",
       "description": "Football agent. You can use this agent to get information about football.",
-      "url": "localhost:50051"
+      "url": "localhost:50053"
     },
     {
       "name": "news-agent",
       "description": "News agent. You can use this agent to get information about news.",
-      "url": "localhost:50051"
+      "url": "localhost:50054"
     },
     {
       "name": "crypto-agent",
       "description": "Crypto agent. You can use this agent to get information about crypto.",
-      "url": "localhost:50051"
+      "url": "localhost:50055"
     },
     {
       "name": "weather-agent",
       "description": "Weather agent. You can use this agent to get information about weather.",
-      "url": "localhost:50051"
+      "url": "localhost:50056"
     }
   ]
 }
