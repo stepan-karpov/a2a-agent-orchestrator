@@ -28,6 +28,40 @@ func SendMessage(bot *tgbotapi.BotAPI, chatID int64, text string) error {
 	return err
 }
 
+func sendStartMessage(bot *tgbotapi.BotAPI, chatID int64) error {
+	text := `Welcome! 👋
+
+I'm an AI assistant that can help you get information on various topics using specialized agents. You can ask me questions or use the buttons below to quickly access information about:
+
+- <b>Authors</b> - Learn about the project authors
+- <b>Crypto</b> - Get information about cryptocurrency
+- <b>Weather</b> - Check weather information
+- <b>News</b> - Read the latest news
+- <b>Football</b> - Get football match information
+
+Choose what you'd like to know about:`
+
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("About authors", "ask_authors"),
+			tgbotapi.NewInlineKeyboardButtonData("About crypto", "ask_crypto"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("About weather", "ask_weather"),
+			tgbotapi.NewInlineKeyboardButtonData("About news", "ask_news"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("About football", "ask_football"),
+		),
+	)
+
+	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ReplyMarkup = keyboard
+	msg.ParseMode = tgbotapi.ModeHTML
+	_, err := bot.Send(msg)
+	return err
+}
+
 func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// Connect to gRPC service for each request
 	conn, err := grpc.NewClient(getGRPCHost(), grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -89,6 +123,34 @@ func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	SendMessage(bot, message.Chat.ID, responseText)
 }
 
+func handleCallbackQuery(bot *tgbotapi.BotAPI, callback *tgbotapi.CallbackQuery) {
+	// Acknowledge the callback
+	bot.Request(tgbotapi.NewCallback(callback.ID, ""))
+
+	// Map callback data to questions
+	questionMap := map[string]string{
+		"ask_authors":  "Tell me about the authors of this project",
+		"ask_crypto":   "Tell me about crypto",
+		"ask_weather":  "Tell me about weather",
+		"ask_news":     "Tell me about news",
+		"ask_football": "Tell me about football",
+	}
+
+	question, exists := questionMap[callback.Data]
+	if !exists {
+		SendMessage(bot, callback.Message.Chat.ID, "Unknown request")
+		return
+	}
+
+	// Create a fake message object to reuse ReplyForAMessage
+	fakeMessage := &tgbotapi.Message{
+		Chat: callback.Message.Chat,
+		Text: question,
+	}
+
+	ReplyForAMessage(bot, fakeMessage)
+}
+
 func Listen(bot *tgbotapi.BotAPI) {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -96,9 +158,23 @@ func Listen(bot *tgbotapi.BotAPI) {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
+		// Handle callback queries (button presses)
+		if update.CallbackQuery != nil {
+			handleCallbackQuery(bot, update.CallbackQuery)
+			continue
+		}
+
+		// Handle regular messages
 		if update.Message == nil {
 			continue
 		}
+
+		// Handle /start command
+		if update.Message.IsCommand() && update.Message.Command() == "start" {
+			sendStartMessage(bot, update.Message.Chat.ID)
+			continue
+		}
+
 		ReplyForAMessage(bot, update.Message)
 	}
 }
@@ -111,7 +187,7 @@ func main() {
 		log.Fatalf("Failed to create bot: %v", err)
 	}
 
-	bot.Debug = true
+	bot.Debug = false
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	Listen(bot)
