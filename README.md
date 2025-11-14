@@ -54,7 +54,12 @@ a2a-agent-orchestrator/
 ├── services/
 │   ├── orchestrator/      # Orchestrator service implementation
 │   │   └── README.md      # Orchestrator documentation
-│   └── simple-agent/      # Additional agent service
+│   └── agents/            # Specialized agent services
+│       ├── authors-info-agent/
+│       ├── crypto-agent/
+│       ├── football-agent/
+│       ├── news-agent/
+│       └── weather-agent/
 ├── telegram-client/       # Telegram bot client
 │   └── README.md          # Telegram client documentation
 ├── vault.json             # Secrets configuration (not in repo)
@@ -85,16 +90,29 @@ a2a-agent-orchestrator/
 
 2. **Start MongoDB** - Ensure MongoDB is running and accessible
 
-3. **Run orchestrator**:
+3. **Run specialized agents** (optional, but recommended for full functionality):
+
+   ```bash
+   # Run each agent in a separate terminal or use docker-compose
+   go run ./services/agents/authors-info-agent
+   go run ./services/agents/crypto-agent
+   go run ./services/agents/football-agent
+   go run ./services/agents/news-agent
+   go run ./services/agents/weather-agent
+   ```
+
+4. **Run orchestrator**:
 
    ```bash
    go run ./services/orchestrator
    ```
 
-4. **Run Telegram client** (optional):
+5. **Run Telegram client** (optional):
    ```bash
    go run ./telegram-client
    ```
+   
+   Once the bot is running, send `/start` command in Telegram to see the interactive menu with quick access buttons.
 
 ## Documentation
 
@@ -108,6 +126,9 @@ a2a-agent-orchestrator/
 - **Asynchronous Processing**: Tasks are processed in background goroutines, allowing non-blocking request handling
 - **Conversation History**: Automatic tracking and retrieval of conversation context per `context_id`
 - **Multiple LLM Providers**: Support for Eliza, OpenRouter/DeepSeek, and extensible provider interface
+- **Specialized Agents**: Support for routing queries to specialized agents (authors, crypto, weather, news, football)
+- **Interactive Telegram Bot**: Start menu with quick access buttons for common topics
+- **Agent-to-Agent Communication**: LLM can automatically call specialized agents when needed
 - **Persistent Storage**: MongoDB integration for task and conversation history storage
 - **gRPC API**: Standardized A2A (Agent-to-Agent) protocol for service communication
 - **Configurable Prompts**: System prompts and history limits configurable per service

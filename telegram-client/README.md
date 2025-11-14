@@ -7,9 +7,22 @@ Telegram bot client that connects users to the A2A orchestrator service. This se
 The Telegram client acts as a bridge between Telegram users and the orchestrator service:
 
 - Receives messages from Telegram users
+- Provides an interactive start menu with quick access buttons for common topics
 - Sends messages to the orchestrator via gRPC (`SendMessage` RPC)
 - Polls task status until completion or failure
 - Returns the response to the user in Telegram
+
+## Features
+
+- **Interactive Start Menu**: Users receive a welcome message with inline keyboard buttons when they send `/start`
+- **Quick Access Buttons**: Pre-configured buttons for:
+  - About authors of this project
+  - About crypto
+  - About weather
+  - About news
+  - About football
+- **Specialized Agents**: The bot can route queries to specialized agents through the orchestrator
+- **HTML Formatting**: Supports Telegram HTML formatting in responses
 
 ## Project Structure
 
@@ -25,10 +38,12 @@ telegram-client/
 
 ## How It Works
 
-1. **Message Reception**: Bot listens for Telegram messages via long polling
-2. **gRPC Request**: Sends message to orchestrator's `SendMessage` endpoint
-3. **Task Polling**: Polls `GetTask` endpoint up to 50 times with increasing delays
-4. **Response**: Sends the task result (artifact content) back to the user
+1. **Start Command**: When user sends `/start`, bot displays welcome message with inline keyboard buttons
+2. **Button Interaction**: User can click buttons or type messages directly
+3. **Message Reception**: Bot listens for Telegram messages and callback queries via long polling
+4. **gRPC Request**: Sends message to orchestrator's `SendMessage` endpoint
+5. **Task Polling**: Polls `GetTask` endpoint up to 50 times with increasing delays
+6. **Response**: Sends the task result (artifact content) back to the user
 
 ## Prerequisites
 

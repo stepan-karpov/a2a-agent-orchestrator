@@ -8,6 +8,7 @@ ADK simplifies the creation of orchestrator services by providing:
 
 - **gRPC Server Wrapper**: Ready-to-use gRPC server with A2A (Agent-to-Agent) protocol
 - **LLM Provider Abstraction**: Unified interface for multiple LLM providers (Eliza, OpenRouter/DeepSeek, etc.)
+- **Specialized Agent Support**: Built-in support for registering and calling specialized agents via gRPC
 - **Task Management**: Automatic task lifecycle management with MongoDB persistence
 - **History Management**: Built-in conversation history tracking and context management
 - **Execution Engine**: Detached task execution with automatic state management
@@ -18,11 +19,12 @@ ADK is designed to help developers quickly build orchestrator services that:
 
 1. Receive messages from agents or clients via gRPC
 2. Process messages using LLM providers
-3. Manage task state and conversation history
-4. Persist data to MongoDB
-5. Return responses asynchronously
+3. Route queries to specialized agents when needed
+4. Manage task state and conversation history
+5. Persist data to MongoDB
+6. Return responses asynchronously
 
-Instead of implementing gRPC servers, task management, and provider integrations from scratch, developers can use ADK to focus on business logic.
+Instead of implementing gRPC servers, task management, provider integrations, and agent coordination from scratch, developers can use ADK to focus on business logic.
 
 ## API Reference
 
@@ -90,6 +92,9 @@ adk/
 ├── a2a/              # gRPC API definitions and generated code
 │   ├── api/          # Protocol Buffer definitions
 │   └── server/        # Generated Go code
+├── agents/           # Agent management and communication
+│   ├── agent.go      # Agent type definition
+│   └── call.go       # Agent gRPC client implementation
 ├── execution/         # Task execution engine
 │   ├── execute.go    # Main execution logic
 │   ├── 1-init-task.go
@@ -113,9 +118,35 @@ adk/
 2. **CreateNewDetachedTask** creates a task and saves initial state
 3. **Detached goroutine** executes:
    - Fetches conversation history
+   - Adds system prompt and agent descriptions (if agents are registered)
    - Calls LLM provider with history + new message
+   - If LLM requests an agent call, routes query to specialized agent via gRPC
+   - Incorporates agent response into conversation history
    - Saves final state with artifacts
 4. **GetTask** can be polled to check task status
+
+### Agent Integration
+
+ADK supports registering specialized agents that can be called by the LLM:
+
+1. **Register Agents**: Use `server.RegisterNewAgent()` to register agents with name, description, and gRPC URL
+2. **Agent Tools**: Registered agents are automatically exposed to LLM providers as tools
+3. **Automatic Routing**: When LLM decides to call an agent, ADK handles the gRPC communication
+4. **Context Preservation**: Agent responses are added to conversation history for context
+
+Example:
+
+```go
+server.RegisterNewAgent(agents.Agent{
+    Name:        "weather-agent",
+    Description: "Weather agent. You can use this agent to get information about weather.",
+    Url:         "localhost:50056",
+})
+```
+
+The agent URL is automatically normalized:
+- `localhost` or `127.0.0.1` → `passthrough:///localhost:port`
+- Other addresses → `dns:///host:port`
 
 ### Execution Settings
 
@@ -127,6 +158,21 @@ type ExecutionSettings struct {
     HistoryLimit int    `json:"history_limit"` // Max history messages
 }
 ```
+
+### LLM Provider Tool Support
+
+LLM providers (Eliza, OpenRouter) automatically support agent tools:
+
+- **Tool Generation**: Each registered agent becomes a tool with:
+  - `name`: Agent name (e.g., "weather-agent")
+  - `description`: Agent description (shown to LLM)
+  - `parameters`: Single parameter "message" with description "Message to send to remote A2A agent"
+
+- **Tool Calls**: When LLM decides to use an agent:
+  - Provider extracts agent name and message from tool call
+  - ADK routes the query to the appropriate agent via gRPC
+  - Agent response is incorporated into conversation history
+  - LLM can continue processing with agent context
 
 ## Examples
 

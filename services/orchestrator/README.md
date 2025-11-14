@@ -9,6 +9,7 @@ This service acts as the central orchestrator for agent-to-agent communication:
 - Receives messages via gRPC (`SendMessage` RPC)
 - Processes messages using LLM providers (Eliza, OpenRouter, etc.)
 - Manages task lifecycle and conversation history
+- Coordinates with specialized agents (authors, crypto, weather, news, football)
 - Persists data to MongoDB
 - Returns task results asynchronously
 
@@ -63,10 +64,28 @@ Before running the orchestrator, ensure you have:
 4. **orchestrator_setting.json** - Service configuration:
    ```json
    {
-     "prompt": "You are a Telegram bot assistant. Answer as briefly and concisely as possible. Do not break Telegram markup",
-     "history_limit": 10
+     "prompt": "You are a Telegram bot assistant...",
+     "history_limit": 10,
+     "agents": [
+       {
+         "name": "authors-info-agent",
+         "description": "Authors info agent...",
+         "url": "localhost:50052"
+       },
+       {
+         "name": "crypto-agent",
+         "description": "Crypto agent...",
+         "url": "localhost:50053"
+       }
+       // ... more agents
+     ]
    }
    ```
+   
+   The `agents` array defines specialized agents that the orchestrator can route queries to. Each agent has:
+   - `name`: Agent identifier used in tool calls
+   - `description`: Description shown to LLM for agent selection
+   - `url`: gRPC endpoint where the agent service is running
 
 ## Configuration
 
@@ -76,6 +95,12 @@ Located in `services/orchestrator/orchestrator_setting.json`:
 
 - **`prompt`**: System prompt sent to LLM as the first message (role: "system")
 - **`history_limit`**: Maximum number of conversation messages to include in context (excluding system prompt)
+- **`agents`**: Array of specialized agents that can be called by the LLM. Each agent includes:
+  - `name`: Unique identifier for the agent
+  - `description`: Description of what the agent does (shown to LLM)
+  - `url`: gRPC endpoint (e.g., `localhost:50052`)
+  
+  The orchestrator automatically registers these agents and makes them available to the LLM as tools. When the LLM determines that an agent should be called, the orchestrator routes the query to the appropriate agent service.
 
 ### Server Configuration
 
