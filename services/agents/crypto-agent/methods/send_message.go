@@ -4,6 +4,7 @@ import (
 	"adk"
 	a2aServerProto "adk/a2a/server"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -19,6 +20,8 @@ Market cap: $1.65T
 24h volume: $85.2B`
 
 func SendMessage(ctx context.Context, req *a2aServerProto.SendMessageRequest, server *adk.Server) (*a2aServerProto.SendMessageResponse, error) {
+	fmt.Println("SendMessage Request: ", req)
+
 	task := &a2aServerProto.Task{
 		Id:        uuid.New().String(),
 		ContextId: req.Request.ContextId,

@@ -4,6 +4,7 @@ import (
 	"adk"
 	a2aServerProto "adk/a2a/server"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -19,6 +20,7 @@ const answer = `Here is the information about the football matches:
 8. Atletico Madrid vs. Real Sociedad`
 
 func SendMessage(ctx context.Context, req *a2aServerProto.SendMessageRequest, server *adk.Server) (*a2aServerProto.SendMessageResponse, error) {
+	fmt.Println("SendMessage Request: ", req)
 	task := &a2aServerProto.Task{
 		Id:        uuid.New().String(),
 		ContextId: req.Request.ContextId,

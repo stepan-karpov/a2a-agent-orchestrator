@@ -30,8 +30,6 @@ func SendMessage(bot *tgbotapi.BotAPI, chatID int64, text string) error {
 
 func ReplyForAMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// Connect to gRPC service for each request
-	// SendMessage(bot, message.Chat.ID, "<b>Привет!</b> Это тестовое сообщение с <b>жирным текстом</b>.")
-	// return
 	conn, err := grpc.NewClient(getGRPCHost(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		SendMessage(bot, message.Chat.ID, "Error connecting to orchestrator service")

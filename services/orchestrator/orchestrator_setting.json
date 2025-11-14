@@ -4,22 +4,22 @@
   "agents": [
     {
       "name": "authors-info-agent",
-      "description": "Authors info agent. You can use this agent to get information about authors.",
+      "description": "Authors info agent. You can use this agent to get information about authors of this project.",
       "url": "localhost:50052"
-    },
-    {
-      "name": "football-agent",
-      "description": "Football agent. You can use this agent to get information about football.",
-      "url": "localhost:50053"
-    },
-    {
-      "name": "news-agent",
-      "description": "News agent. You can use this agent to get information about news.",
-      "url": "localhost:50054"
     },
     {
       "name": "crypto-agent",
       "description": "Crypto agent. You can use this agent to get information about crypto.",
+      "url": "localhost:50053"
+    },
+    {
+      "name": "football-agent",
+      "description": "Football agent. You can use this agent to get information about football.",
+      "url": "localhost:50054"
+    },
+    {
+      "name": "news-agent",
+      "description": "News agent. You can use this agent to get information about news.",
       "url": "localhost:50055"
     },
     {

@@ -102,7 +102,7 @@ func (p *Provider) ChatCompletion(messages []providers.Message, agents []agentsP
 						Properties: map[string]openRouterProperty{
 							"message": {
 								Type:        "string",
-								Description: "Сообщение для отправки удаленному A2A агенту",
+								Description: "Message to send to remote A2A agent",
 							},
 						},
 						Required: []string{"message"},

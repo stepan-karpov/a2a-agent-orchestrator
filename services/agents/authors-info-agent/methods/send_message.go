@@ -4,15 +4,24 @@ import (
 	"adk"
 	a2aServerProto "adk/a2a/server"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 )
 
 const (
-	answer = "Here is an information about the author: John Doe. He is a software engineer at Google. He is 30 years old. He is from the United States."
+	answer = `
+	Here is an information about the authors of this project:
+
+	1. Denis Kondratov. BAI at Yakov & Partners Consulting Company. Student of MIPT DIHT
+	2. Aleksei Ovchenkov. Analyst at Yandex.Search Company. Student of MIPT DIHT
+	3. Steve Karpov. Backend Developer at Yandex.Taxi Company. Student of MIPT DIHT
+	`
 )
 
 func SendMessage(ctx context.Context, req *a2aServerProto.SendMessageRequest, server *adk.Server) (*a2aServerProto.SendMessageResponse, error) {
+	fmt.Println("SendMessage Request: ", req)
+
 	task := &a2aServerProto.Task{
 		Id:        uuid.New().String(),
 		ContextId: req.Request.ContextId,

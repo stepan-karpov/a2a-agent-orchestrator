@@ -96,7 +96,7 @@ func handleRegularResponse(task *server.Task, content string, calledAgents []str
 			task.Metadata = metadataStruct
 		}
 
-		agentsText := fmt.Sprintf("\n\n[Использованы агенты: %s]", strings.Join(calledAgents, ", "))
+		agentsText := fmt.Sprintf("\n\n[Agents used: %s]", strings.Join(calledAgents, ", "))
 		finalContent = content + agentsText
 	}
 

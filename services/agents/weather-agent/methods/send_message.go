@@ -4,6 +4,7 @@ import (
 	"adk"
 	a2aServerProto "adk/a2a/server"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -16,6 +17,8 @@ Wind: 15 km/h
 Precipitation: 10% chance of rain`
 
 func SendMessage(ctx context.Context, req *a2aServerProto.SendMessageRequest, server *adk.Server) (*a2aServerProto.SendMessageResponse, error) {
+	fmt.Println("SendMessage Request: ", req)
+
 	task := &a2aServerProto.Task{
 		Id:        uuid.New().String(),
 		ContextId: req.Request.ContextId,
