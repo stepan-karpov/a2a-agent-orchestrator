@@ -1,141 +1,76 @@
-# RAG Platform Agent
+# RAG
 
-RAG (Retrieval-Augmented Generation) агент для поиска релевантных документов из базы знаний.
+RAG (Retrieval-Augmented Generation) agent for searching relevant documents from a knowledge base.
 
-## Описание
+## Description
 
-Этот агент индексирует документы из `database.json` при запуске и использует векторный поиск для нахождения наиболее релевантных документов по запросу пользователя.
+This agent indexes documents from `database.xlsx` on startup and uses vector search to find the most relevant documents based on user queries.
 
-## Архитектура
+## Architecture
 
-1. **Индексация** (при запуске):
-   - Читает документы из `database.json`
-   - Генерирует эмбеддинги для каждого документа
-   - Сохраняет в векторное хранилище в памяти
+1. **Indexing** (on startup):
+   - Reads documents from `database.xlsx`
+   - Generates embeddings for each document
+   - Stores them in an in-memory vector store
 
-2. **Поиск** (при запросе):
-   - Генерирует эмбеддинг для запроса пользователя
-   - Находит Top-K наиболее похожих документов (косинусное сходство)
-   - Возвращает найденные документы с оценками релевантности
+2. **Retrieval** (on request):
+   - Generates an embedding for the user query
+   - Finds Top-K most similar documents (cosine similarity)
+   - Returns found documents with relevance scores
 
-## Конфигурация
+## Configuration
 
-### Провайдер эмбеддингов
+### Embedding Provider
 
-Система использует **OpenRouter** для генерации эмбеддингов:
-- Модель: `openai/text-embedding-3-small`
-- Размерность: 1536
+The system uses **OpenRouter** for embedding generation:
+- Model: `openai/text-embedding-3-small`
+- Dimension: 1536
 - API: `https://openrouter.ai/api/v1/embeddings`
 
-### Константы
+### Settings
 
-В `rag/config.go`:
-- `TopK = 5` - количество возвращаемых документов
-- `EmbeddingDimension = 1536` - размерность векторов эмбеддингов
+In `settings.json`:
+- `top_k = 5` - number of documents to return
+- `embedding_dimension = 1536` - embedding vector dimension
+- `openrouter_embedding_url` - OpenRouter API endpoint
+- `openrouter_embedding_model` - embedding model name
 
-## Настройка
+## Setup
 
-### Установка API ключа
+### Database Preparation
 
-Требуется API ключ от OpenRouter:
+The database must be in Excel format (`database.xlsx`). Documents should be in the first column (column A) of the first sheet.
 
-```bash
-export OPENROUTER_API_KEY="your-openrouter-api-key"
-```
+#### Excel File Format
 
-Или добавьте в `vault.json` в корне проекта:
-```json
-{
-  "openrouter-api-key": "your-openrouter-api-key"
-}
-```
+- First sheet (Sheet1)
+- Column A contains documents (one per row)
+- Empty rows are skipped
 
-### 2. Подготовка базы данных
 
-База данных должна быть в формате Excel (`database.xlsx`). Документы должны быть в первой колонке (колонка A) первого листа.
-
-#### Конвертация из JSON в Excel
-
-Если у вас есть `database.json`, вы можете конвертировать его в Excel:
-
-```bash
-cd services/rag/tools
-go run convert_json_to_excel.go
-```
-
-Это создаст `database.xlsx` в текущей директории.
-
-#### Формат Excel файла
-
-- Первый лист (Sheet1)
-- Колонка A содержит документы (по одному на строку)
-- Пустые строки пропускаются
-
-## Запуск
-
-```bash
-cd services/agents/rag-platform
-go run .
-```
-
-При запуске сервис:
-1. Загрузит документы из `database.json`
-2. Сгенерирует эмбеддинги для каждого документа
-3. Запустит gRPC сервер на порту `:50057`
-
-## Использование
-
-### Через gRPC
-
-```bash
-grpcurl -plaintext -d '{
-  "request": {
-    "context_id": "test-context",
-    "role": "ROLE_USER",
-    "content": "Расскажи про древний Египет"
-  }
-}' localhost:50057 a2a.A2AService/SendMessage
-```
-
-### Ответ
-
-Агент вернет Top-K наиболее релевантных документов с оценками:
-
-```
-Found 5 relevant documents:
-
-1. (Score: 0.856) Документ 1: Информация о древнем Египте...
-2. (Score: 0.742) Документ 2: История древних цивилизаций...
-...
-```
-
-## Структура проекта
+## Project Structure
 
 ```
 rag-platform/
-├── main.go                 # Точка входа, индексация при запуске
+├── main.go                 # Entry point, indexing on startup
 ├── methods/
-│   ├── send_message.go     # Обработка запросов, поиск документов
-│   └── get_task.go         # Получение статуса задачи
+│   ├── send_message.go     # Request handling, document search
+│   └── get_task.go         # Task status retrieval
 ├── rag/
-│   ├── config.go           # Константы и конфигурация
-│   ├── embedding.go        # Генерация эмбеддингов (OpenRouter/OpenAI/HF)
-│   ├── vector_store.go     # Векторное хранилище в памяти
-│   ├── indexer.go          # Индексация документов
-│   └── retriever.go        # Поиск релевантных документов
-└── database.json           # База знаний (массив строк)
+│   ├── embedding.go        # Embedding generation (OpenRouter)
+│   ├── vector_store.go     # In-memory vector store
+│   ├── indexer.go          # Document indexing
+│   └── retriever.go        # Relevant document retrieval
+├── settings/
+│   └── settings.go         # Settings parsing
+├── settings.json           # Service configuration
+└── database.xlsx           # Knowledge base (Excel format)
 ```
 
-## Особенности
+## Features
 
-- **Векторный поиск**: Использует косинусное сходство для нахождения релевантных документов
-- **In-memory хранилище**: Быстрый поиск без внешних зависимостей
-- **OpenRouter эмбеддинги**: Использует OpenRouter API для генерации высококачественных эмбеддингов
-- **Автоматическая индексация**: Документы индексируются при запуске сервиса
-
-## Производительность
-
-- Индексация: ~1-2 секунды на 100 документов (зависит от API провайдера)
-- Поиск: <100ms для запроса
-- Память: ~1-2 MB на 1000 документов (зависит от размерности эмбеддингов)
-
+- **Vector Search**: Uses cosine similarity to find relevant documents
+- **In-memory Storage**: Fast search without external dependencies
+- **OpenRouter Embeddings**: Uses OpenRouter API for high-quality embedding generation
+- **Automatic Indexing**: Documents are indexed on service startup
+- **Excel Support**: Reads documents from Excel format
