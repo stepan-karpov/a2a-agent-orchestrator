@@ -1,0 +1,6 @@
+{
+  "top_k": 5,
+  "embedding_dimension": 1536,
+  "openrouter_embedding_url": "https://openrouter.ai/api/v1/embeddings",
+  "openrouter_embedding_model": "openai/text-embedding-3-small"
+}

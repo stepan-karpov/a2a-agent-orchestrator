@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  rag:
+    build:
+      context: ../..
+      dockerfile: services/rag/Dockerfile
+    container_name: rag
+    restart: unless-stopped
+    ports:
+      - "50057:50057"
+    volumes:
+      - ../../vault.json:/app/vault.json:ro
+      - ./settings.json:/app/settings.json:ro
+      - ./database.xlsx:/app/database.xlsx:ro
+
